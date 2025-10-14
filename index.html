@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ВетКлиника "Друг" - Современная ветеринарная помощь</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader">
+            <div class="paw"></div>
+            <p>Загружаем лучшую заботу для питомцев...</p>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content auth-modal">
+            <button class="close">&times;</button>
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Вход</button>
+                <button class="auth-tab" data-tab="register">Регистрация</button>
+            </div>
+            
+            <div class="auth-content">
+                <div id="login" class="auth-form active">
+                    <h3>Вход в систему</h3>
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <input type="text" id="loginEmail" required placeholder=" ">
+                            <label for="loginEmail">Логин</label>
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id="loginPassword" required placeholder=" ">
+                            <label for="loginPassword">Пароль</label>
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <button type="submit" class="btn btn-primary full-width">
+                            <span>Войти</span>
+                            <i class="fas fa-sign-in-alt"></i>
+                        </button>
+                    </form>
+                    <div class="auth-demo">
+                        <p><strong>Демо доступы:</strong></p>
+                        <p>Админ: admin / 111111</p>
+                        <p>Врачи: vrach1-vrach6 / 111111</p>
+                    </div>
+                </div>
+                
+                <div id="register" class="auth-form">
+                    <h3>Регистрация</h3>
+                    <form id="registerForm">
+                        <div class="form-group">
+                            <input type="text" id="registerName" required placeholder=" ">
+                            <label for="registerName">ФИО</label>
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="registerEmail" required placeholder=" ">
+                            <label for="registerEmail">Email</label>
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id="registerPassword" required placeholder=" " minlength="6">
+                            <label for="registerPassword">Пароль (мин. 6 символов)</label>
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" id="registerPhone" required placeholder=" ">
+                            <label for="registerPhone">Телефон</label>
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <button type="submit" class="btn btn-primary full-width">
+                            <span>Зарегистрироваться</span>
+                            <i class="fas fa-user-plus"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="container">
+                <div class="nav-content">
+                    <div class="logo">
+                        <div class="logo-icon">
+                            <i class="fas fa-paw"></i>
+                        </div>
+                        <div class="logo-text">
+                            <span class="logo-title">ВетКлиника "Друг"</span>
+                            <span class="logo-subtitle">Забота о питомцах</span>
+                        </div>
+                    </div>
+                    
+                    <div class="nav-menu">
+                        <a href="#home" class="nav-link active">Главная</a>
+                        <a href="#services" class="nav-link">Услуги</a>
+                        <a href="#doctors" class="nav-link">Врачи</a>
+                        <a href="#about" class="nav-link">О клинике</a>
+                        <a href="#contacts" class="nav-link">Контакты</a>
+                        <a href="#adminPanel" class="nav-link admin-link" style="display: none;">
+                            <i class="fas fa-cog"></i> Админ
+                        </a>
+                        <a href="#doctorPanel" class="nav-link doctor-link" style="display: none;">
+                            <i class="fas fa-user-md"></i> Панель врача
+                        </a>
+                    </div>
+                    
+                    <div class="nav-actions">
+                        <button id="authBtn" class="btn btn-outline">
+                            <i class="fas fa-user"></i>
+                            <span>Войти</span>
+                        </button>
+                        <button class="nav-toggle">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-background">
+            <div class="hero-particles" id="particles"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title animate-fade-up">
+                        Профессиональная забота<br>о ваших питомцах
+                    </h1>
+                    <p class="hero-description animate-fade-up" style="animation-delay: 0.2s">
+                        Современная ветеринарная клиника с передовым оборудованием 
+                        и командой опытных специалистов
+                    </p>
+                    <div class="hero-actions animate-fade-up" style="animation-delay: 0.4s">
+                        <button class="btn btn-primary btn-large" id="heroAppointmentBtn">
+                            <span>Записаться на прием</span>
+                            <i class="fas fa-calendar-check"></i>
+                        </button>
+                        <a href="#doctors" class="btn btn-outline btn-large">
+                            <span>Наши врачи</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="floating-card card-1">
+                        <i class="fas fa-stethoscope"></i>
+                        <span>Диагностика</span>
+                    </div>
+                    <div class="floating-card card-2">
+                        <i class="fas fa-syringe"></i>
+                        <span>Вакцинация</span>
+                    </div>
+                    <div class="floating-card card-3">
+                        <i class="fas fa-heart"></i>
+                        <span>Хирургия</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Наши услуги</h2>
+                <p class="section-subtitle">Полный спектр ветеринарных услуг для ваших питомцев</p>
+            </div>
+            
+            <div class="services-grid">
+                <div class="service-card animate-scale">
+                    <div class="service-icon">
+                        <i class="fas fa-stethoscope"></i>
+                    </div>
+                    <h3>Диагностика</h3>
+                    <p>Полное обследование с использованием современного оборудования</p>
+                    <ul>
+                        <li>УЗИ диагностика</li>
+                        <li>Рентгенология</li>
+                        <li>Лабораторные исследования</li>
+                    </ul>
+                    <button class="btn btn-outline btn-sm service-appointment-btn">
+                        Записаться
+                    </button>
+                </div>
+                
+                <div class="service-card animate-scale" style="animation-delay: 0.1s">
+                    <div class="service-icon">
+                        <i class="fas fa-syringe"></i>
+                    </div>
+                    <h3>Вакцинация</h3>
+                    <p>Профилактика инфекционных заболеваний по международным стандартам</p>
+                    <ul>
+                        <li>Комплексные вакцины</li>
+                        <li>Индивидуальный график</li>
+                        <li>Контроль реакции</li>
+                    </ul>
+                    <button class="btn btn-outline btn-sm service-appointment-btn">
+                        Записаться
+                    </button>
+                </div>
+                
+                <div class="service-card animate-scale" style="animation-delay: 0.2s">
+                    <div class="service-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3>Хирургия</h3>
+                    <p>Операции любой сложности в современной операционной</p>
+                    <ul>
+                        <li>Плановые операции</li>
+                        <li>Экстренная помощь</li>
+                        <li>Реабилитация</li>
+                    </ul>
+                    <button class="btn btn-outline btn-sm service-appointment-btn">
+                        Записаться
+                    </button>
+                </div>
+                
+                <div class="service-card animate-scale" style="animation-delay: 0.3s">
+                    <div class="service-icon">
+                        <i class="fas fa-tooth"></i>
+                    </div>
+                    <h3>Стоматология</h3>
+                    <p>Профессиональный уход за зубами и полостью рта</p>
+                    <ul>
+                        <li>Чистка зубов</li>
+                        <li>Лечение заболеваний</li>
+                        <li>Удаление зубов</li>
+                    </ul>
+                    <button class="btn btn-outline btn-sm service-appointment-btn">
+                        Записаться
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Doctors Section -->
+    <section id="doctors" class="doctors">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Наши врачи</h2>
+                <p class="section-subtitle">Профессиональная команда опытных специалистов</p>
+            </div>
+            
+            <div class="doctors-grid">
+                <!-- Doctors will be loaded by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2 class="section-title">О нашей клинике</h2>
+                    <p class="about-description">
+                        ВетКлиника "Друг" — это современный медицинский центр, 
+                        где мы сочетаем передовые технологии с искренней заботой 
+                        о каждом питомце.
+                    </p>
+                    
+                    <div class="features-list">
+                        <div class="feature">
+                            <i class="fas fa-shield-alt"></i>
+                            <div>
+                                <h4>Безопасность</h4>
+                                <p>Стерильные помещения и современное оборудование</p>
+                            </div>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-user-md"></i>
+                            <div>
+                                <h4>Опытные врачи</h4>
+                                <p>Специалисты с многолетним опытом работы</p>
+                            </div>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <h4>Круглосуточно</h4>
+                                <p>Работаем 24/7 для экстренных случаев</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="about-gallery">
+                    <div class="gallery-item main-image">
+                        <img src="центр.webp" alt="Интерьер клиники">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="собака.jpg" alt="Оборудование">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="попугай.jpg" alt="Зона ожидания">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Panel -->
+    <section id="adminPanel" class="admin-panel" style="display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Панель администратора</h2>
+                <p class="section-subtitle">Управление клиникой и отчетность</p>
+            </div>
+            
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <i class="fas fa-users"></i>
+                    <h3 id="adminTotalPatients">0</h3>
+                    <p>Всего пациентов</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-calendar-check"></i>
+                    <h3 id="adminTotalAppointments">0</h3>
+                    <p>Записей на прием</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-ruble-sign"></i>
+                    <h3 id="adminTotalRevenue">0 ₽</h3>
+                    <p>Общий доход</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-user-md"></i>
+                    <h3 id="adminTotalDoctors">0</h3>
+                    <p>Врачей в штате</p>
+                </div>
+            </div>
+            
+            <div class="admin-actions">
+                <button class="btn btn-primary" id="generateReportBtn">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Сформировать отчет</span>
+                </button>
+                <button class="btn btn-outline" id="refreshStatsBtn">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Обновить статистику</span>
+                </button>
+            </div>
+
+            <!-- Services Management Section -->
+            <div class="services-management-section">
+                <h3>Управление услугами</h3>
+                
+                <div class="services-management-header">
+                    <button class="btn btn-primary" id="addServiceBtn">
+                        <i class="fas fa-plus"></i> Добавить услугу
+                    </button>
+                    <div class="services-stats">
+                        <span class="stat">Всего услуг: <span id="totalServicesCount">0</span></span>
+                        <span class="stat">Активных: <span id="activeServicesCount">0</span></span>
+                    </div>
+                </div>
+                
+                <div class="services-search">
+                    <div class="form-group">
+                        <input type="text" id="searchServices" placeholder="Поиск услуг по названию...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                
+                <div class="services-list" id="servicesList">
+                    <!-- Services will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Search and Filters Section -->
+            <div class="search-filters-section">
+                <h3>Поиск и фильтрация записей</h3>
+                
+                <div class="search-filters">
+                    <div class="search-group">
+                        <div class="form-group">
+                            <label for="searchPatient">Поиск по пациенту</label>
+                            <input type="text" id="searchPatient" placeholder="Введите кличку питомца...">
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <div class="form-group">
+                            <label for="filterService">Фильтр по услуге</label>
+                            <select id="filterService">
+                                <option value="all">Все услуги</option>
+                                <option value="consultation">Консультация</option>
+                                <option value="vaccination">Вакцинация</option>
+                                <option value="surgery">Хирургия</option>
+                                <option value="dentistry">Стоматология</option>
+                                <option value="diagnostics">Диагностика</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="filterDateFrom">Дата с</label>
+                            <input type="date" id="filterDateFrom">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="filterDateTo">Дата по</label>
+                            <input type="date" id="filterDateTo">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="filterStatus">Статус</label>
+                            <select id="filterStatus">
+                                <option value="all">Все статусы</option>
+                                <option value="pending">Ожидание</option>
+                                <option value="confirmed">Подтвержден</option>
+                                <option value="completed">Завершен</option>
+                                <option value="cancelled">Отменен</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="search-actions">
+                        <button class="btn btn-primary" id="applyFiltersBtn">
+                            <i class="fas fa-filter"></i> Применить фильтры
+                        </button>
+                        <button class="btn btn-outline" id="resetFiltersBtn">
+                            <i class="fas fa-redo"></i> Сбросить
+                        </button>
+                        <button class="btn btn-outline" id="exportResultsBtn">
+                            <i class="fas fa-download"></i> Экспорт результатов
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="search-results-info">
+                    <div class="results-count">
+                        Найдено записей: <span id="resultsCount">0</span>
+                    </div>
+                    <div class="search-stats">
+                        <span class="stat-item">Подтвержденные: <span id="confirmedCount">0</span></span>
+                        <span class="stat-item">Завершенные: <span id="completedCount">0</span></span>
+                        <span class="stat-item">Ожидающие: <span id="pendingCount">0</span></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="reports-section">
+                <h3>Последние отчеты</h3>
+                <div class="reports-grid" id="reportsGrid">
+                    <!-- Reports will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Doctor Panel -->
+    <section id="doctorPanel" class="doctor-panel" style="display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Панель врача</h2>
+                <p class="section-subtitle">Управление приемами и история болезней пациентов</p>
+            </div>
+            
+            <div class="doctor-welcome">
+                <div class="welcome-content">
+                    <h3>Добро пожаловать, <span id="doctorName">Врач</span>!</h3>
+                    <p class="specialization">Специализация: <span id="doctorSpecialization">Врач</span></p>
+                </div>
+            </div>
+            
+            <div class="doctor-content" id="doctorContent">
+                <div class="doctor-sections">
+                    <!-- Текущие приемы -->
+                    <div class="doctor-section">
+                        <div class="section-header-inner">
+                            <h3><i class="fas fa-calendar-check"></i> Текущие приемы</h3>
+                            <span class="section-badge" id="appointmentsCount">0</span>
+                        </div>
+                        <div class="appointments-container">
+                            <div id="doctorAppointmentsList" class="appointments-list">
+                                <!-- Активные приемы будут загружены здесь -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- История болезней -->
+                    <div class="doctor-section">
+                        <div class="section-header-inner">
+                            <h3><i class="fas fa-history"></i> История болезней</h3>
+                            <span class="section-badge" id="historyCount">0</span>
+                        </div>
+                        <div class="history-container">
+                            <div id="medicalHistoryList" class="medical-history-list">
+                                <!-- История болезней будет загружена здесь -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section id="contacts" class="map-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Как нас найти</h2>
+                <p class="section-subtitle">Приходите к нам в гости - мы всегда рады помочь</p>
+            </div>
+            
+            <div class="map-container">
+                <div id="map" class="map">
+                    <div class="map-placeholder">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h3>г. Липецк, ул. Фрунзе 91А</h3>
+                        <p>Клиника находится в центре города</p>
+                    </div>
+                </div>
+                <div class="map-info">
+                    <h3>Контакты</h3>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>г. Липецк, ул. Фрунзе 91А</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>+7 (4742) 123-456</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>info@vetdrug-lipetsk.ru</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Пн-Вс: 8:00 - 22:00</span>
+                    </div>
+                    <button class="btn btn-primary full-width appointment-sidebar-btn">
+                        <i class="fas fa-calendar-check"></i>
+                        Записаться на прием
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="logo">
+                        <div class="logo-icon">
+                            <i class="fas fa-paw"></i>
+                        </div>
+                        <div class="logo-text">
+                            <span class="logo-title">ВетКлиника "Друг"</span>
+                            <span class="logo-subtitle">Забота о питомцах</span>
+                        </div>
+                    </div>
+                    <p>Современная ветеринарная клиника в Липецке с полным спектром услуг для ваших питомцев.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Услуги</h4>
+                    <ul>
+                        <li><a href="#services">Диагностика</a></li>
+                        <li><a href="#services">Вакцинация</a></li>
+                        <li><a href="#services">Хирургия</a></li>
+                        <li><a href="#services">Стоматология</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Контакты</h4>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> г. Липецк, ул. Фрунзе 91А</li>
+                        <li><i class="fas fa-phone"></i> +7 (4742) 123-456</li>
+                        <li><i class="fas fa-envelope"></i> info@vetdrug-lipetsk.ru</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Социальные сети</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-vk"></i></a>
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 ВетКлиника "Друг". Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Appointment Modal -->
+    <div id="appointmentModal" class="modal">
+        <div class="modal-content appointment-modal">
+            <button class="close">&times;</button>
+            <h2>Запись на прием</h2>
+            
+            <form id="appointmentForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="appointmentPetName">Кличка питомца *</label>
+                        <input type="text" id="appointmentPetName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="appointmentPetType">Вид животного *</label>
+                        <select id="appointmentPetType" required>
+                            <option value="">Выберите вид</option>
+                            <option value="cat">Кот/Кошка</option>
+                            <option value="dog">Собака</option>
+                            <option value="bird">Птица</option>
+                            <option value="rodent">Грызун</option>
+                            <option value="other">Другое</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="appointmentDoctor">Врач *</label>
+                        <select id="appointmentDoctor" required>
+                            <option value="">Выберите врача</option>
+                            <!-- Doctors will be populated dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="appointmentService">Услуга *</label>
+                        <select id="appointmentService" required>
+                            <option value="">Выберите услугу</option>
+                            <!-- Services will be populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="appointmentDate">Дата приема *</label>
+                        <input type="date" id="appointmentDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="appointmentTime">Время приема *</label>
+                        <input type="time" id="appointmentTime" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="appointmentNotes">Примечания</label>
+                    <textarea id="appointmentNotes" rows="3" placeholder="Опишите симптомы или особые пожелания..."></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary full-width">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Записаться на прием</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content report-modal">
+            <button class="close">&times;</button>
+            <h2>Отчет по клинике</h2>
+            
+            <div class="report-period">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="reportDateFrom">Период с</label>
+                        <input type="date" id="reportDateFrom">
+                    </div>
+                    <div class="form-group">
+                        <label for="reportDateTo">Период по</label>
+                        <input type="date" id="reportDateTo">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="report-content" id="reportContent">
+                <!-- Report will be generated here -->
+            </div>
+            
+            <div class="report-actions">
+                <button class="btn btn-primary" id="printReportBtn">
+                    <i class="fas fa-print"></i>
+                    <span>Печать</span>
+                </button>
+                <button class="btn btn-outline" id="exportReportBtn">
+                    <i class="fas fa-download"></i>
+                    <span>Экспорт в PDF</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Management Modal -->
+    <div id="serviceModal" class="modal">
+        <div class="modal-content service-modal">
+            <button class="close">&times;</button>
+            <h2>Добавление услуги</h2>
+            
+            <form id="serviceForm">
+                <input type="hidden" id="serviceId" value="">
+                
+                <div class="service-icon-preview">
+                    <div class="service-icon-large">
+                        <i id="serviceIconPreview" class="fas fa-stethoscope"></i>
+                    </div>
+                    <p>Выберите иконку для услуги</p>
+                </div>
+                
+                <div class="icon-selector" id="iconSelector">
+                    <!-- Icon options will be populated dynamically -->
+                </div>
+                
+                <div class="service-form-grid">
+                    <div class="form-group">
+                        <label for="serviceName">Название услуги *</label>
+                        <input type="text" id="serviceName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="serviceIdField">ID услуги *</label>
+                        <input type="text" id="serviceIdField" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="serviceDescription">Описание услуги *</label>
+                        <textarea id="serviceDescription" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="service-form-row">
+                        <div class="form-group">
+                            <label for="servicePrice">Стоимость (₽) *</label>
+                            <input type="number" id="servicePrice" min="0" step="50" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="serviceDuration">Длительность (мин) *</label>
+                            <input type="number" id="serviceDuration" min="5" step="5" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Категория услуги</label>
+                        <div class="service-categories" id="serviceCategories">
+                            <!-- Category options will be populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="serviceStatus">Статус услуги</label>
+                        <select id="serviceStatus">
+                            <option value="active">Активна</option>
+                            <option value="inactive">Неактивна</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        <span>Добавить услугу</span>
+                    </button>
+                    <button type="button" class="btn btn-outline" id="cancelServiceBtn">
+                        Отмена
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Doctor Details Modal -->
+    <div id="doctorModal" class="modal">
+        <div class="modal-content doctor-modal">
+            <button class="close">&times;</button>
+            <div class="doctor-details" id="doctorDetails">
+                <!-- Doctor details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/doctors.js"></script>
+    <script src="js/appointments.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/doctors-system.js"></script>
+    <script src="js/user-profile.js"></script>
+    <script src="js/pets.js"></script>
+</body>
+</html>
